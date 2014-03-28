@@ -139,7 +139,7 @@ class XportReader(object):
                 pass
 
     def _get_row(self):
-        return self.file.read(80)
+        return self.file.read(80).decode()
 
     def loadfile(self, file):
         """
@@ -238,7 +238,8 @@ class XportReader(object):
             obs_length += field['field_length']
             fields += [field]
 
-        if not self._get_row() == "HEADER RECORD*******OBS     HEADER RECORD!!!!!!!000000000000000000000000000000  ":
+        header = self._get_row()
+        if not header == "HEADER RECORD*******OBS     HEADER RECORD!!!!!!!000000000000000000000000000000  ":
             raise Exception("Observation header not found.")
 
         self.fields = fields
@@ -257,7 +258,7 @@ class XportReader(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         s = self.file.read(self.record_length)
         if not s or len(s) < self.record_length:
             raise StopIteration()
@@ -274,6 +275,9 @@ class XportReader(object):
             obs[field['name']] = field_val
         return obs
 
+    def next(self):
+        return self.__next__()
+
 
 
 if __name__ == "__main__":
@@ -281,8 +285,8 @@ if __name__ == "__main__":
     with XportReader(sys.argv[1]) as reader:
         for obj in reader:
             try:
-                print obj
-            except IOError, e:
+                print (obj)
+            except IOError as e:
                 # except block to gracefully exit on broken pipe signal (e.g. xport.py foo.xpt | head)
                 import errno
                 if e.errno == errno.EPIPE:

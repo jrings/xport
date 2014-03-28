@@ -21,7 +21,7 @@ Let's make this short and sweet::
     import xport
     with xport.XportReader(xport_file) as reader:
         for row in reader:
-            print row
+            print(row)
 
 Each `row` will be a dict with a key for each field in the dataset. Values will be either a unicode string,
 a float or an int, depending on the type specified in the file for that field.
@@ -75,17 +75,21 @@ functions and a little math.
 Get 1000th record::
 
     reader.file.seek(reader.record_start + reader.record_length * 1000, 0)
-    reader.next()
+    reader.next() #<=Python 2.5 
+    next(reader) #Python 2.6+, Python 3
 
 Get record before most recent one fetched::
 
     reader.file.seek(-reader.record_length * 2, 1)
-    reader.next()
+    reader.next() #<=Python 2.5 
+    next(reader) #Python 2.6+, Python 3
+
 
 Get last record::
 
     reader.file.seek(reader.record_start + reader.record_length * (reader.record_count() - 1), 0)
-    reader.next()
+    reader.next() #<=Python 2.5 
+    next(reader) #Python 2.6+, Python 3
 
 (In this last example, note that we can't seek from the end of the file, because there may be padding bytes.
 Good old fixed-width binary file formats.)
